@@ -117,20 +117,14 @@ function ChoppedStraw_Register:loadMap(name)
 
 	print('*** ChoppedStraw v'..ChoppedStraw_Register.version..' specialization loading ***');
 
-	local titaniumChopperSwitcherSpec;
-	if pdlc_titaniumAddon and pdlc_titaniumAddon.ChopperSwitcher then
-		titaniumChopperSwitcherSpec = pdlc_titaniumAddon.ChopperSwitcher;
-	end;
-	-- print(('titaniumChopperSwitcherSpec=%s'):format(tostring(titaniumChopperSwitcherSpec)));
-
 	local addedTo = {};
 
 	for k, v in pairs(VehicleTypeUtil.vehicleTypes) do
 		if v ~= nil then
 			-- has Combine spec -> continue
-			local allowInsertion = SpecializationUtil.hasSpecialization(Combine, v.specializations);
+			local allowInsertion = SpecializationUtil.hasSpecialization(Combine, v.specializations) and not SpecializationUtil.hasSpecialization(FruitPreparer, v.specializations);
 
-			local customEnvironment;
+			--local customEnvironment;
 			if allowInsertion then
 				-- print(('\tvehicleType %q has Combine spec'):format(v.name));
 				if v.name:find('.') then
@@ -148,27 +142,6 @@ function ChoppedStraw_Register:loadMap(name)
 			end;
 
 			if allowInsertion then
-				local hasChopperSwitcherSpec = false;
-
-				-- has ChopperSwitcher or strawSpec or strawChopper spec [mod] -> continue
-				if customEnvironment then
-					hasChopperSwitcherSpec = rawget(SpecializationUtil.specializations, customEnvironment .. '.ChopperSwitcher') ~= nil or rawget(SpecializationUtil.specializations, customEnvironment .. '.chopperSwitcher') ~= nil or rawget(SpecializationUtil.specializations, customEnvironment .. '.strawSpec') ~= nil or rawget(SpecializationUtil.specializations, customEnvironment .. '.strawChopper') ~= nil;
-					-- print(('\t\thasChopperSwitcherSpec [mod]=%s'):format(tostring(hasChopperSwitcherSpec)));
-				end;
-
-				-- has ChopperSwitcher spec [Titanium] -> continue
-				if not hasChopperSwitcherSpec and titaniumChopperSwitcherSpec ~= nil then
-					hasChopperSwitcherSpec = SpecializationUtil.hasSpecialization(titaniumChopperSwitcherSpec, v.specializations);
-					-- print(('\t\thasChopperSwitcherSpec [Titanium]=%s'):format(tostring(hasChopperSwitcherSpec)));
-				end;
-
-				if not hasChopperSwitcherSpec then
-					allowInsertion = false;
-				end;
-				-- print(('\t\thasChopperSwitcherSpec=%s -> allowInsertion=%s'):format(tostring(hasChopperSwitcherSpec), tostring(allowInsertion)));
-			end;
-
-			if allowInsertion then
 				-- print(('\tChoppedStraw spec added to %q'):format(v.name));
 				table.insert(v.specializations, choppedStrawSpec);
 				addedTo[#addedTo + 1] = v.name;
@@ -176,9 +149,9 @@ function ChoppedStraw_Register:loadMap(name)
 		end;
 	end;
 
-	if #addedTo > 0 then
-		print('*** ChoppedStraw added to:\n\t\t' .. table.concat(addedTo, '\n\t\t'));
-	end;
+	--if #addedTo > 0 then
+	--	print('*** ChoppedStraw added to:\n\t\t' .. table.concat(addedTo, '\n\t\t'));
+	--end;
 
 	self.specAdded = true;
 end;
