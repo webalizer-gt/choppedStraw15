@@ -1,4 +1,4 @@
--- Chopped Straw
+﻿-- Chopped Straw
 -- Spec for chopped straw left on field
 
 
@@ -131,10 +131,8 @@ Fehlersuche:
 Sollte im Spiel kein Stroh erscheinen, ist als erstes die log.txt zu prüfen. Bei korrekt installiertem choppedStraw findet man drei Einträge:
 
   *** ChoppedStraw fruittypes registered!
-  *** ChoppedStraw v1.2.xx specialization loading ***
-  *** ChoppedStraw added to:
-		  [Liste von Dreschern]
+  *** ChoppedStraw v15.x.xx specialization loading ***
+
 
 Fehlt der erste Eintrag, wird die fruits.lua nicht gefunden. Prüfe Anleitung Teil 6 & 7!
 Fehlt der zweite Eintrag, stimmt etwas mit ZZZ_ChoppedStraw.zip nicht. Prüfe Anleitung Teil 7!
-Fehlt der dritte Eintrag, ist möglicherweise kein unterstützter Drescher vorhanden.

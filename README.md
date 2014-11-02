@@ -4,14 +4,7 @@ This specialization for Farming Simulator 15 adds a layer with chopped material 
 It also inserts a global specialization to appropriate combine harvesters to make this layers visible while harvesting with activated straw chopper.
 
 ###Requirements:
-Harvesters with one of the following specializations:
-- chopperSwitcher (Default game spec)
-- strawSpec
-- strawChopper
+Harvesters with FS15 Standard-Specialization "Combine"
 
-####Optional:
-Soil Management & Growth Control (SoilMod) 1.2.x by Decker_MMIV - www.fs-uk.com is supported via plugin:
-- Processing chopped material with cultivator, plough or direct planting seeders will raise the organic fertilization level by 1
-- soil pH will decrease by 1 unit at the same time (exact decrease depends on pHScaleModifier map property)
 
 [Visit www.planet-ls.de](http://planet-ls.de/board/index.php?page=Thread&postID=243930#post243930)

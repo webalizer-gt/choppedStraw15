@@ -133,10 +133,8 @@ Troubleshooting:
 If there´s no chopped straw in the game appearing, first check the log.txt. With correct installed choppedStraw there should be three entries:
 
   *** ChoppedStraw fruittypes registered!
-  *** ChoppedStraw v1.2.xx specialization loading ***
-  *** ChoppedStraw added to:
-      [List of combine harvesters]
+  *** ChoppedStraw v15.x.xx specialization loading ***
+
 
 If the first entry is missing, the fruits.lua is not found/executed. Check instructions parts 6 & 7!
 If the second entry is missing, something went wrong with ZZZ_ChoppedStraw.zip. Check instructions part 7!
-If the third entry is missing, there´s maybe no supported combine harvester in your game.
