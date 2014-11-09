@@ -1,7 +1,6 @@
 ﻿-- Chopped Straw
 -- Spec for chopped straw left on field
 
-
 #######################
 Instructions part 1 of 7:
 

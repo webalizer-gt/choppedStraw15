@@ -9,108 +9,8 @@ ChoppedStraw_Register = {};
 local modItem = ModsUtil.findModItemByModName(g_currentModName);
 ChoppedStraw_Register.version = (modItem and modItem.version) and modItem.version or "?.?.?";
 
--- Register ChoppedStraw for callback from SoilMod's plugin facility
-getfenv(0)["modSoilModPlugins"] = getfenv(0)["modSoilModPlugins"] or {}
-table.insert(getfenv(0)["modSoilModPlugins"], ChoppedStraw_Register)
 --
 ChoppedStraw_Register.initialized = false
-ChoppedStraw_Register.soilModPresent = false
--- Define implements
-ChoppedStraw_Register.csTYPE_UNKNOWN    = 0
-ChoppedStraw_Register.csTYPE_PLOUGH     = 2^0
-ChoppedStraw_Register.csTYPE_CULTIVATOR = 2^1
-ChoppedStraw_Register.csTYPE_SEEDER     = 2^2
-
-
-function ChoppedStraw_Register.updateFoliage(sx,sz,wx,wz,hx,hz, isForced, implementType)
-    -- Increase fertilizer(organic)...
-    setDensityMaskParams(g_currentMission.fmcFoliageFertilizerOrganic, "greater", 0);
-    -- ..where there's choppedStraw / choppedMaize / choppedRape, by 1.
-    addDensityMaskedParallelogram(g_currentMission.fmcFoliageFertilizerOrganic, sx,sz,wx,wz,hx,hz, 0, 2, ChoppedStraw_Register.foliageChoppedStrawId, 0, 1, 1);
-    addDensityMaskedParallelogram(g_currentMission.fmcFoliageFertilizerOrganic, sx,sz,wx,wz,hx,hz, 0, 2, ChoppedStraw_Register.foliageChoppedMaizeId, 0, 1, 1);
-		addDensityMaskedParallelogram(g_currentMission.fmcFoliageFertilizerOrganic, sx,sz,wx,wz,hx,hz, 0, 2, ChoppedStraw_Register.foliageChoppedRapeId, 0, 1, 1);
-
-    -- Decrease soil pH where there's choppedStraw / choppedMaize / choppedRape, by 1 - we're cultivating/plouging/seeding it into ground.
-    setDensityMaskParams(g_currentMission.fmcFoliageSoil_pH, "greater", 0)
-    addDensityMaskedParallelogram(g_currentMission.fmcFoliageSoil_pH, sx,sz,wx,wz,hx,hz, 0, 3, ChoppedStraw_Register.foliageChoppedStrawId, 0, 1, -- mask
-                        -1  -- decrease
-                    );
-		addDensityMaskedParallelogram(g_currentMission.fmcFoliageSoil_pH, sx,sz,wx,wz,hx,hz, 0, 3, ChoppedStraw_Register.foliageChoppedMaizeId, 0, 1, -- mask
-												-1  -- decrease
-										);
-		addDensityMaskedParallelogram(g_currentMission.fmcFoliageSoil_pH, sx,sz,wx,wz,hx,hz, 0, 3, ChoppedStraw_Register.foliageChoppedRapeId, 0, 1, -- mask
-												-1  -- decrease
-										);
-    setDensityMaskParams(g_currentMission.fmcFoliageSoil_pH, "greater", -1)
-
-		-- Remove the choppedStraw / choppedMaize / choppedRape we've just cultivated/ploughed/seeded into ground.
-    setDensityParallelogram(ChoppedStraw_Register.foliageChoppedStrawId, sx,sz,wx,wz,hx,hz, 0, 1, 0)
-    setDensityParallelogram(ChoppedStraw_Register.foliageChoppedMaizeId, sx,sz,wx,wz,hx,hz, 0, 1, 0)
-    setDensityParallelogram(ChoppedStraw_Register.foliageChoppedRapeId,   sx,sz,wx,wz,hx,hz, 0, 1, 0)
-end;
-
-function ChoppedStraw_Register.soilModPluginCallback(soilMod)
-
-	-- Mark that SoilMod has "called us"
-	ChoppedStraw_Register.soilModPresent = true;
-
-	-- Helper function, to extract the foliage-layer-id if available
-	local function getFruitFoliageLayerId(fruitId)
-		if g_currentMission.fruits[fruitId] ~= nil then
-			if g_currentMission.fruits[fruitId].preparingOutputId ~= nil and g_currentMission.fruits[fruitId].preparingOutputId ~= 0 then
-				return g_currentMission.fruits[fruitId].preparingOutputId;
-			end;
-		end;
-		return nil;
-	end;
-	-- Helper function, to determine if foliageId is valid
-	local function hasFoliageLayer(foliageId)
-		return (foliageId ~= nil and foliageId ~= 0);
-	end;
-
-	-- Get the foliage-id values for choppedStraw, choppedMaize, choppedRape.
-	if getFruitFoliageLayerId(FruitUtil.FRUITTYPE_CHOPPEDSTRAW) ~= nil then
-		ChoppedStraw_Register.foliageChoppedStrawId = getFruitFoliageLayerId(FruitUtil.FRUITTYPE_CHOPPEDSTRAW);
-	end;
-	if getFruitFoliageLayerId(FruitUtil.FRUITTYPE_CHOPPEDMAIZE) ~= nil then
-		ChoppedStraw_Register.foliageChoppedMaizeId = getFruitFoliageLayerId(FruitUtil.FRUITTYPE_CHOPPEDMAIZE);
-	end;
-	if getFruitFoliageLayerId(FruitUtil.FRUITTYPE_CHOPPEDRAPE) ~= nil then
-		ChoppedStraw_Register.foliageChoppedRapeId = getFruitFoliageLayerId(FruitUtil.FRUITTYPE_CHOPPEDRAPE);
-	end;
-
-	-- Only add plugin for fruit-type, if fruit-type exists and has foliage-layer
-  if hasFoliageLayer(ChoppedStraw_Register.foliageChoppedStrawId) and hasFoliageLayer(ChoppedStraw_Register.foliageChoppedMaizeId) and  hasFoliageLayer(ChoppedStraw_Register.foliageChoppedRapeId) then
-
-		soilMod.addPlugin_UpdateSowingArea_before(
-		"Process chopped straw",
-		31,
-    function(sx,sz,wx,wz,hx,hz, dataStore, fruitDesc)
-      if dataStore.useDirectPlanting then
-    	   ChoppedStraw_Register.updateFoliage(sx,sz,wx,wz,hx,hz, dataStore.forced, ChoppedStraw_Register.csTYPE_SEEDER)
-      end
-    end
-		)
-
-		soilMod.addPlugin_UpdateCultivatorArea_before(
-		"Process chopped straw",
-		31,
-		function(sx,sz,wx,wz,hx,hz, dataStore, fruitDesc)
-			ChoppedStraw_Register.updateFoliage(sx,sz,wx,wz,hx,hz, dataStore.forced, ChoppedStraw_Register.csTYPE_CULTIVATOR)
-		end
-		)
-
-		soilMod.addPlugin_UpdatePloughArea_before(
-		"Process chopped straw",
-		31,
-		function(sx,sz,wx,wz,hx,hz, dataStore, fruitDesc)
-			ChoppedStraw_Register.updateFoliage(sx,sz,wx,wz,hx,hz, dataStore.forced, ChoppedStraw_Register.csTYPE_PLOUGH)
-		end
-		)
-
-	end;
-  return true;
-end;
 
 function ChoppedStraw_Register:loadMap(name)
 	if self.specAdded then return; end;
@@ -161,13 +61,13 @@ function ChoppedStraw_Register:update(dt)
     ChoppedStraw_Register.initialized = true -- Only initialize ONCE.
 
     -- If SoilMod did not "call us", then do it "the old way"...
-    if not ChoppedStraw_Register.soilModPresent then
+    --if not ChoppedStraw_Register.soilModPresent then
 		ChoppedStraw_Register.old_UpdateDestroyCommonArea = Utils.updateDestroyCommonArea;
 		Utils.updateDestroyCommonArea = ChoppedStraw_Register.updateDestroyCommonArea;
 
 		ChoppedStraw_Register.old_updateSowingArea = Utils.updateSowingArea;
 		Utils.updateSowingArea = ChoppedStraw_Register.updateSowingArea;
-    end;
+    --end;
   end;
 end;
 

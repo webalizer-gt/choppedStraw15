@@ -1,3 +1,7 @@
-﻿02.11.2014
+﻿09.11.2014
+v15.0.02
+- removed SoilMod-Plugin
+
+02.11.2014
 v15.0.01
 - Initial release for FS15

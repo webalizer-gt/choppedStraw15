@@ -1,7 +1,6 @@
 ﻿-- Chopped Straw
 -- Spec for chopped straw left on field
 
-
 #######################
 Anleitung Teil 1 von 7:
 
@@ -132,7 +131,6 @@ Sollte im Spiel kein Stroh erscheinen, ist als erstes die log.txt zu prüfen. Be
 
   *** ChoppedStraw fruittypes registered!
   *** ChoppedStraw v15.x.xx specialization loading ***
-
 
 Fehlt der erste Eintrag, wird die fruits.lua nicht gefunden. Prüfe Anleitung Teil 6 & 7!
 Fehlt der zweite Eintrag, stimmt etwas mit ZZZ_ChoppedStraw.zip nicht. Prüfe Anleitung Teil 7!
