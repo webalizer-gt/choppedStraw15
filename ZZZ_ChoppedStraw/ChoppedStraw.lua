@@ -67,7 +67,26 @@ function ChoppedStraw:updateTick(dt)
 			local preparingOutputId = nil;
 
 			if g_currentMission.fruits[FruitUtil.FRUITTYPE_CHOPPEDSTRAW] and g_currentMission.fruits[FruitUtil.FRUITTYPE_CHOPPEDRAPE] and g_currentMission.fruits[FruitUtil.FRUITTYPE_CHOPPEDMAIZE] then
-				if self.lastArea > 0 then
+        if self.isTurnedOn and self.movingDirection > 0 and self.lastValidInputFruitType ~= 0 then
+          local fruitDesc = FruitUtil.fruitIndexToDesc[self.lastValidInputFruitType];
+          if fruitDesc.name == "maize" then
+            preparingOutputId = g_currentMission.fruits[FruitUtil.FRUITTYPE_CHOPPEDMAIZE].preparingOutputId;
+            for nIndex,oImplement in pairs(self.attachedImplements) do --parse all implements
+              if oImplement ~= nil and oImplement.object ~= nil then
+                if oImplement.object.threshingParticleSystems ~= nil and oImplement.object.threshingParticleSystems.isEmitting then
+                  for _,cuttingArea in pairs(oImplement.object.workAreas) do
+                    x, y, z = getWorldTranslation(cuttingArea.start)
+                    x1, y1, z1 = getWorldTranslation(cuttingArea.width)
+                    x2, y2, z2 = getWorldTranslation(cuttingArea.height)
+                    Utils.updateStrawHaulmArea(preparingOutputId, x, z, x1, z1, x2, z2)
+                  end;
+                end;
+              end;
+            end;
+          end;
+        end;
+
+        --[[if self.lastArea > 0 then
 					local fruitDesc = FruitUtil.fruitIndexToDesc[self.lastValidInputFruitType];
 					if fruitDesc.name == "maize" then
 						preparingOutputId = g_currentMission.fruits[FruitUtil.FRUITTYPE_CHOPPEDMAIZE].preparingOutputId;
@@ -82,7 +101,7 @@ function ChoppedStraw:updateTick(dt)
 							end;
 						end;
 					end;
-				end;
+				end;]]--
 				if self.chopperPSenabled then
 					local fruitDesc = FruitUtil.fruitIndexToDesc[self.lastValidInputFruitType];
 					if fruitDesc.name == "rape" then
