@@ -1,3 +1,6 @@
+﻿21.08.2015
+- fix grass destruction (limitGrassDestructionToField)
+
 28.11.2014
 v15.0.04
 - fix registerFruitType parameters

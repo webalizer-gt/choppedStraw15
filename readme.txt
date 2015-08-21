@@ -1,6 +1,6 @@
 ﻿-- Chopped Straw
 -- Spec for chopped straw left on field
--- V15.0.02
+-- V15.0.05
 -- 09.11.14
 
 Anforderungen:
